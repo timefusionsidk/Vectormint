@@ -2,6 +2,10 @@
 
 Free, private, in-browser image-to-SVG converter (part of Timefusionsidk). React + TypeScript + Vite + Tailwind. Tracing runs in a Web Worker using ImageTracer.js (pinned 1.2.6). No backend, no uploads.
 
+## Requirements
+
+Use Node.js 24 LTS and npm. The repository root is the application root.
+
 ## Commands
 ```
 npm ci
@@ -23,7 +27,30 @@ Validate by file signature (never extension alone) -> decode once into a base ca
 A consent banner appears only when ads or analytics are configured.
 
 ## Deploy to Vercel
-Push to Git, import the repo in Vercel (Vite preset is detected; `vercel.json` adds SPA rewrites, immutable asset caching, and security headers). Set the env vars above in Project Settings, deploy. Or `npx vercel --prod`.
+Import this repository in Vercel with these settings:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | Repository root (`.`) |
+| Framework Preset | Vite |
+| Node.js | 24.x |
+| Install Command | `npm ci` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+`vercel.json` adds SPA rewrites, immutable asset caching, and security headers. No backend, database, or secrets are required to build and use the converter. Set `VITE_SITE_URL` to the actual deployment origin and configure contact details before public launch. Ads and analytics are optional and disabled when unconfigured. Redeploy after changing build-time variables.
+
+For local configuration, copy `.env.example` to `.env.local`. Do not commit `.env.local`.
+
+## Project layout
+
+- `src/components`, `src/pages`, `src/lib`: shared UI, routes, and helpers
+- `src/features/vectorizer`: processing pipeline, worker client, and workspace components
+- `src/workers`: browser worker entry point
+- `src/styles`, `src/types`: styles and tracing declarations
+- `public`: static favicon
+- `tests/support`: pipeline fixtures and worker-thread helpers
+- `e2e`: browser verification scripts
 
 ## Known limitations
 - Semi-transparent pixels are thresholded at 50% (soft shadows become hard cut-outs).
