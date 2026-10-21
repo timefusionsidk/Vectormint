@@ -20,8 +20,8 @@ npm run e2e          # real-browser checks against `vite preview` (needs a build
 Validate by file signature (never extension alone) -> decode once into a base canvas (<=1800 px) -> resize to the working size -> read pixels once -> transfer buffer to worker -> alpha cut-out (>=50% opaque), optional blur, deterministic median-cut palette, snap pixels to palette (or black/white threshold) -> ImageTracer path tracing -> own SVG serializer (vector paths only) -> validation -> Blob URL preview/download. Cancel terminates the worker; a fresh one is created next time. Only ImageTracer's tracing is used; its palette/blur/SVG output are replaced because alpha counted in its colour distance and its hole coordinates were rounded to whole pixels.
 
 ## Configuration (`.env`, see `.env.example`; all public, no secrets)
-- `VITE_SITE_URL` canonical origin; generates canonical/og:url, `sitemap.xml`, `robots.txt` sitemap line at build. Empty = omitted.
-- `VITE_CONTACT_EMAIL` / `VITE_CONTACT_URL` required before launch, or the Contact page says details are not set up.
+- `VITE_SITE_URL` canonical origin override. On Vercel, the deployment URL is used automatically; it generates canonical/og:url, `sitemap.xml`, and a `robots.txt` sitemap line.
+- `VITE_CONTACT_EMAIL` / `VITE_CONTACT_URL` can override the contact page. It defaults to `timefusions.idk@gmail.com`.
 - Ads: `VITE_ADS_ENABLED=true` + `VITE_ADSENSE_CLIENT` + `VITE_ADSENSE_SLOT`. Off by default; script loads only after consent. AdSense approval is not guaranteed.
 - Analytics: `VITE_PLAUSIBLE_DOMAIN` (+ optional `VITE_PLAUSIBLE_SRC`). Consent-gated; only preset/detail/reason props are ever sent.
 A consent banner appears only when ads or analytics are configured.
@@ -38,7 +38,7 @@ Import this repository in Vercel with these settings:
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 
-`vercel.json` adds SPA rewrites, immutable asset caching, and security headers. No backend, database, or secrets are required to build and use the converter. Set `VITE_SITE_URL` to the actual deployment origin and configure contact details before public launch. Ads and analytics are optional and disabled when unconfigured. Redeploy after changing build-time variables.
+`vercel.json` adds SPA rewrites, immutable asset caching, and security headers. No backend, database, or secrets are required to build and use the converter. Set `VITE_SITE_URL` if a custom domain should be canonical; Vercel deployment URLs are detected automatically. Set the optional contact variables to override the default contact address. Ads and analytics are optional and disabled when unconfigured. Redeploy after changing build-time variables.
 
 For local configuration, copy `.env.example` to `.env.local`. Do not commit `.env.local`.
 
