@@ -5,6 +5,12 @@ import { fileURLToPath } from 'node:url'
 
 const ROUTES = ['/', '/privacy', '/terms', '/contact']
 
+function deploymentOrigin(value: string | undefined) {
+  const trimmed = value?.trim().replace(/\/+$/, '') ?? ''
+  if (!trimmed) return ''
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+}
+
 /** Injects the configured site URL into index.html and emits robots.txt + sitemap.xml at build time. */
 function seoPlugin(siteUrl: string): Plugin {
   const base = siteUrl.replace(/\/+$/, '')
@@ -41,8 +47,13 @@ function seoPlugin(siteUrl: string): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
+  // Vercel supplies VERCEL_URL at build time. VITE_SITE_URL remains the
+  // explicit override for a custom domain.
+  const siteUrl = deploymentOrigin(
+    env.VITE_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL,
+  )
   return {
-    plugins: [react(), tailwindcss(), seoPlugin(env.VITE_SITE_URL ?? '')],
+    plugins: [react(), tailwindcss(), seoPlugin(siteUrl)],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     worker: { format: 'es' },
     build: { target: 'es2022', sourcemap: false },
